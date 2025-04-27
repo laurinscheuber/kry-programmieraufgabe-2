@@ -50,3 +50,15 @@ After implementing and running the program, our Rainbow Table **successfully fou
 5.  **Plaintext Discovery:** During the recomputation of the chain, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was encountered. The password that produced this hash within the chain is the desired plaintext.
 
 **Conclusion:** Despite the relatively small size of the Rainbow Table (2,000 starting passwords, chain length 2,000) compared to the total password space, it was sufficient to contain a chain that included the target hash `1d56a37fb6b08aa709fe90e12ca59e12`, allowing for the successful recovery of its corresponding plaintext.
+
+### Note on Table Coverage
+
+It's important to note that while the lookup was successful for the *specific* target hash given in the assignment, the coverage of this Rainbow Table relative to the entire possible password space is extremely small.
+
+*   **Total Password Space:** With 7 characters chosen from 36 possibilities (0-9, a-z), there are 36<sup>7</sup> = 78,364,164,096 (over 78 billion) potential passwords.
+*   **Table Coverage (Theoretical Maximum):** The table consists of 2,000 chains, each with 2,000 steps (links). In the best-case scenario (no chain merges or collisions), this covers 2,000 * 2,000 = 4,000,000 unique password/hash pairs.
+*   **Fraction Covered:** The fraction of the total password space covered by this table is approximately 4,000,000 / 78,364,164,096 ≈ 5.1 x 10<sup>-5</sup>, or about 0.005%.
+
+This means that if the target hash had been chosen randomly from *any* 7-character password within the defined character set, the probability of finding it with this specific table would be roughly 1 in 20,000.
+
+For the purpose of this assignment, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was likely chosen specifically because it *is* contained within one of the chains generated from the first 2,000 starting passwords, allowing students to demonstrate a successful lookup without needing the immense resources required for a large-scale Rainbow Table.
