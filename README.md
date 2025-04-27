@@ -39,7 +39,7 @@ The goal of this bonus assignment was to create a Rainbow Table in Java for MD5 
 
 After implementing and running the program, our Rainbow Table **successfully found** the plaintext for the target MD5 hash `1d56a37fb6b08aa709fe90e12ca59e12`.
 
-**The found plaintext is: `[FOUND_PASSWORD]`**  *(Please replace `[FOUND_PASSWORD]` with the actual password found by your program)*.
+**The found plaintext is: `0bgec3d`** 
 
 ### Lookup Process Explanation:
 
