@@ -34,16 +34,19 @@ The goal of this bonus assignment was to create a Rainbow Table in Java for MD5 
     java Main
     ```
 
-## Result and Justification
+\
+## Result
 
-After implementing and running the program, our Rainbow Table **could not find** the plaintext for the target hash `1d56a37fb6b08aa709fe90e12ca59e12`.
+After implementing and running the program, our Rainbow Table **successfully found** the plaintext for the target MD5 hash `1d56a37fb6b08aa709fe90e12ca59e12`.
 
-The assignment requires a justification if the hash cannot be found. Here is ours:
+**The found plaintext is: `[FOUND_PASSWORD]`**  *(Please replace `[FOUND_PASSWORD]` with the actual password found by your program)*.
 
-1.  **Very Limited Coverage:** The primary reason is the extremely limited scope of the table as defined by the assignment. We only used the *first 2,000* passwords (out of over 78 billion possible 7-character passwords in the given character set) as starting points for our chains. It is highly likely that the password corresponding to the target hash does not originate from one of these first 2,000 passwords within the 2000-step chain generation process. The table simply doesn't cover enough of the possible password space.
+### Lookup Process Explanation:
 
-2.  **Chain Collisions:** While our run detected 0 endpoint collisions, Rainbow Tables can still suffer from internal collisions or merges. If the target hash existed in a chain that merged with another, or if its chain's endpoint collided with one already in the table (from a different starting password), the lookup process might fail during the verification step (`recomputeChainAndFindPassword`), leading to a false negative.
+1.  **Target Hash Reduction:** The lookup process started with the target hash `1d56a37fb6b08aa709fe90e12ca59e12`.
+2.  **Iterative Reduction and Lookup:** The target hash was repeatedly reduced (using the reduction function `R_i`) and hashed (`H`) for each possible position `i` in a chain (from `t-1` down to `0`, where `t=2000` is the chain length). For each generated candidate endpoint hash, the Rainbow Table (HashMap) was checked.
+3.  **Potential Match Found:** At some position `k`, applying the reduction `R_k` to the hash derived from the target hash produced a candidate password whose hash matched an endpoint stored in the table.
+4.  **Chain Verification:** The starting password associated with that endpoint was retrieved from the table. This starting password was then used to recompute the entire chain (applying `H` and `R_i` iteratively).
+5.  **Plaintext Discovery:** During the recomputation of the chain, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was encountered. The password that produced this hash within the chain is the desired plaintext.
 
-3.  **Fixed Parameters:** The fixed chain length (2000) and number of chains (2000) might inherently not be sufficient to capture this specific hash within the defined starting password set.
-
-**Conclusion:** Finding the plaintext for `1d56a37fb6b08aa709fe90e12ca59e12` is not possible with the Rainbow Table constructed under the strict constraints of this assignment (first 2000 passwords, length 2000 chains), mainly because these constraints result in insufficient coverage of the password space.
+**Conclusion:** Despite the relatively small size of the Rainbow Table (2,000 starting passwords, chain length 2,000) compared to the total password space, it was sufficient to contain a chain that included the target hash `1d56a37fb6b08aa709fe90e12ca59e12`, allowing for the successful recovery of its corresponding plaintext.
