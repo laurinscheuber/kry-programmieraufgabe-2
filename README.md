@@ -47,12 +47,19 @@ The program will:
 
 ## Conclusion
 
-After running the program, we found that the hash "1d56a37fb6b08aa709fe90e12ca59e12" could not be found using our Rainbow Table implementation. We also tried to brute-force the hash with the first 5,000 passwords, but it was not found.
+After running the program, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was **not found** using the generated Rainbow Table. The supplementary brute-force check on the first 5,000 passwords also failed to find the corresponding plaintext.
 
-This suggests that:
+Based on the assignment ("oder begründen Sie, dass dies mit der zu konstruierenden Rainbow-Table nicht möglich ist"), here's a justification for why finding the hash might not be possible with this specific table:
 
-1. The plaintext corresponding to this hash is not among the first 2,000 passwords specified in the assignment.
-2. It's also not in the first 5,000 passwords we checked through brute force.
-3. It's possible that the plaintext is beyond the range we checked or that our implementation of the reduction function doesn't capture this specific hash.
+1.  **Limited Password Space Coverage:** The table is built using only the *first 2,000* 7-character passwords (lowercase letters and digits) as starting points for the chains. The total number of possible passwords in this space is 36<sup>7</sup> (over 78 billion). Our 2,000 starting chains cover only a minuscule fraction of the potential passwords and their corresponding hashes.
+    *   It is highly probable that the plaintext for the target hash is simply not derived from any of these initial 2,000 passwords within the 2000-step chain length.
 
-Therefore, we conclude that it is not possible to find the plaintext for the provided hash using the Rainbow Table as specified in the assignment.
+2.  **Chain Collisions:** Rainbow tables are susceptible to collisions, where different passwords or intermediate hashes can lead to the same subsequent value after reduction and hashing.
+    *   **Endpoint Collisions:** Multiple chains starting with different passwords might end with the same final password. Our table stores only one start-end pair. If the target hash belongs to a chain whose endpoint collides with another stored chain, the lookup might retrieve the *wrong* starting password, leading to a failed verification (`recomputeChainAndFindPassword` returns null).
+    *   **Internal Merges:** Chains can merge before reaching their final step. If the target hash exists in a chain *after* it has merged with another, the lookup process (working backward from the hash) might still trace back to the endpoint of the *other* chain, again leading to a false alarm during recomputation.
+
+3.  **Table Parameters (Chain Length/Number):** The chosen parameters (2000 chains, 2000 length) define the table's specific coverage. While following the assignment, these parameters might simply not be sufficient to include the chain containing the target hash.
+
+4.  **Reduction Function Behavior:** While the reduction function aims to map hashes back to the password space, its distribution might not be perfectly uniform. It's theoretically possible, though less likely, that the specific sequence of reductions applied during the lookup for the target hash consistently produces intermediate passwords whose final chain endpoints are not present in our limited table, even if the original password was one of the first 2,000.
+
+**Therefore, we conclude that finding the plaintext for `1d56a37fb6b08aa709fe90e12ca59e12` is not possible with the Rainbow Table constructed according to the assignment's specific constraints (first 2000 passwords, chain length 2000), primarily due to the extremely limited coverage of the vast password space.**

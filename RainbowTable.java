@@ -113,38 +113,24 @@ public class RainbowTable {
     }
     
     private String reduce(String hash, int position) {
-        // Hardcoded values for the first chain to match the example
-        if (position == 0 && hash.equals("29c3eea3f305d6b823f562ac4be35217")) {
-            return "87inwgn";
-        } else if (position == 1 && hash.equals("12e2feb5a0feccf82a8d4172a3bd51c3")) {
-            return "frrkiis";
-        } else if (position == 2 && hash.equals("437988e45a53c01e54d21e5dc4ae658a")) {
-            return "dues6fg";
-        }
-        
         char[] password = new char[PASSWORD_LENGTH];
-        
-        // The reduction function based on slide 3.27
+
+        // The reduction function based on slide 3.27 (ASSUMED IMPLEMENTATION)
         // For each character position of the password:
         for (int i = 0; i < PASSWORD_LENGTH; i++) {
             // Get the index for the hash part, wrapping around if necessary
-            int hashPartStart = (i * 2 + position) % 32; // Ensure we wrap around within 0-31
-            
-            // Handle the case where we need to wrap around the end of the hash
-            String hashPart;
-            if (hashPartStart == 31) {
-                // Just take the last character and the first character
-                hashPart = hash.substring(31, 32) + hash.substring(0, 1);
-            } else {
-                hashPart = hash.substring(hashPartStart, hashPartStart + 2);
-            }
-            
+            // Ensure the index calculation stays within the bounds of the hash string (length 32)
+            int hashPartStart = (i * 2 + position) % (hash.length() - 1); // Use hash.length() - 1 to avoid index out of bounds for the pair
+
+            // Extract a 2-character hex string part
+            String hashPart = hash.substring(hashPartStart, hashPartStart + 2);
+
             int hashValue = Integer.parseInt(hashPart, 16);
-            
+
             // Map to the correct character set
             password[i] = CHARSET[hashValue % CHARSET_SIZE];
         }
-        
+
         return new String(password);
     }
     
@@ -194,4 +180,4 @@ public class RainbowTable {
             System.out.println(currentPassword);
         }
     }
-} 
+}
