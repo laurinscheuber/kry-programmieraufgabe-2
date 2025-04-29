@@ -2,10 +2,10 @@
  * @author Laurin Scheuber, Nicolas Staub, Tugce Nur Tas
  * @date April 27, 2025
  * 
- * Main application class.
+ * Demo application class.
  * Serves as the entry point and delegates execution to RainbowTable.main().
  */
-public class Main {
+public class Demo {
     /**
      * Main entry point of the application.
      * Delegates execution to RainbowTable.main().

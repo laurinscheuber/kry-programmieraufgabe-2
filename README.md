@@ -1,6 +1,7 @@
 # Kryptographie Bonusaufgabe: MD5 Rainbow Table
 
 **Team Members:**
+
 - Tugce Nur Tas
 - Nicolas Staub
 - Laurin Scheuber
@@ -10,6 +11,7 @@
 ## Assignment Task
 
 The goal of this bonus assignment was to create a Rainbow Table in Java for MD5 hashes. The specific requirements were:
+
 - Use the first 2,000 passwords of length 7 consisting of lowercase letters ('a'-'z') and digits ('0'-'9').
 - The password sequence starts from "0000000".
 - Use a chain length of 2,000 (apply hash and reduction 2,000 times per starting password).
@@ -20,26 +22,27 @@ The goal of this bonus assignment was to create a Rainbow Table in Java for MD5 
 ## Project Files
 
 - `RainbowTable.java`: Contains the main logic for the Rainbow Table, including chain generation, hashing (MD5), the reduction function, and the table storage (HashMap).
-- `Main.java`: The main program entry point. It initializes the `RainbowTable`, generates the table, prints a verification example, attempts the lookup for the target hash, and prints the results.
+- `Demo.java`: The main program entry point. It initializes the `RainbowTable`, generates the table, prints a verification example, attempts the lookup for the target hash, and prints the results.
 - `README.md`: This file, documenting the project and results.
 
 ## How to Run
 
 1.  **Compile:**
     ```bash
-    javac RainbowTable.java Main.java
+    javac RainbowTable.java Demo.java
     ```
 2.  **Run:**
     ```bash
-    java Main
+    java Demo
     ```
 
 \
+
 ## Result
 
 After implementing and running the program, our Rainbow Table **successfully found** the plaintext for the target MD5 hash `1d56a37fb6b08aa709fe90e12ca59e12`.
 
-**The found plaintext is: `0bgec3d`** 
+**The found plaintext is: `0bgec3d`**
 
 ### Lookup Process Explanation:
 
@@ -53,12 +56,16 @@ After implementing and running the program, our Rainbow Table **successfully fou
 
 ### Note on Table Coverage
 
-It's important to note that while the lookup was successful for the *specific* target hash given in the assignment, the coverage of this Rainbow Table relative to the entire possible password space is extremely small.
+It's important to note that while the lookup was successful for the _specific_ target hash given in the assignment, the coverage of this Rainbow Table relative to the entire possible password space is extremely small.
 
-*   **Total Password Space:** With 7 characters chosen from 36 possibilities (0-9, a-z), there are 36<sup>7</sup> = 78,364,164,096 (over 78 billion) potential passwords.
-*   **Table Coverage (Theoretical Maximum):** The table consists of 2,000 chains, each with 2,000 steps (links). In the best-case scenario (no chain merges or collisions), this covers 2,000 * 2,000 = 4,000,000 unique password/hash pairs.
-*   **Fraction Covered:** The fraction of the total password space covered by this table is approximately 4,000,000 / 78,364,164,096 ≈ 5.1 x 10<sup>-5</sup>, or about 0.005%.
+- **Total Password Space:** With 7 characters chosen from 36 possibilities (0-9, a-z), there are 36<sup>7</sup> = 78,364,164,096 (over 78 billion) potential passwords.
+- **Table Coverage (Theoretical Maximum):** The table consists of 2,000 chains, each with 2,000 steps (links). In the best-case scenario (no chain merges or collisions), this covers 2,000 \* 2,000 = 4,000,000 unique password/hash pairs.
+- **Fraction Covered:** The fraction of the total password space covered by this table is approximately 4,000,000 / 78,364,164,096 ≈ 5.1 x 10<sup>-5</sup>, or about 0.005%.
 
-This means that if the target hash had been chosen randomly from *any* 7-character password within the defined character set, the probability of finding it with this specific table would be roughly 1 in 20,000.
+This means that if the target hash had been chosen randomly from _any_ 7-character password within the defined character set, the probability of finding it with this specific table would be roughly 1 in 20,000.
 
-For the purpose of this assignment, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was likely chosen specifically because it *is* contained within one of the chains generated from the first 2,000 starting passwords, allowing students to demonstrate a successful lookup without needing the immense resources required for a large-scale Rainbow Table.
+For the purpose of this assignment, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was likely chosen specifically because it _is_ contained within one of the chains generated from the first 2,000 starting passwords, allowing students to demonstrate a successful lookup without needing the immense resources required for a large-scale Rainbow Table.
+
+## Declaration
+
+We hereby declare that this implementation was completed by our team without using any "mitlauschen" (cheating) techniques. The algorithm was implemented based solely on the lecture materials and without looking at the implementation during the table construction phase, as required by the assignment.
