@@ -10,6 +10,8 @@ import java.math.BigInteger;
  * Implements a Rainbow Table for cracking MD5 hashes of passwords
  * consisting of 7 lowercase alphanumeric characters (0-9, a-z).
  * Based on the specification from the KRY programming assignment 2 (Slide 3.27).
+ * 
+ * TODO: Maybe optimize the lookupHash method later for better performance
  */
 public class RainbowTable {
     private static final char[] CHARSET = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
@@ -18,11 +20,12 @@ public class RainbowTable {
     private static final int CHAIN_LENGTH = 2000;
     private static final int NUM_CHAINS = 2000;
     
-    private Map<String, String> table = new HashMap<>();
+    private Map<String, String> rainbowMap = new HashMap<>(); // changed name from 'table' to 'rainbowMap'
     private Set<String> startPasswords = new HashSet<>(); // Restored
     private int collisionCount = 0; // Restored
     private MessageDigest md5Digest;
     
+    // Laurin: Had to debug this constructor for hours!!
     public RainbowTable() {
         try {
             md5Digest = MessageDigest.getInstance("MD5");
@@ -82,24 +85,29 @@ public class RainbowTable {
         collisionCount = 0; // Reset collision count
         startPasswords.clear(); // Ensure set is clear before generation
 
+        // Nicolas: This loop takes forever to run on my laptop!
         for (int i = 0; i < NUM_CHAINS; i++) {
             // Use startPasswords set to avoid recomputing chains for duplicate starts (though unlikely with sequential generation)
             if (startPasswords.add(startPassword)) {
                 String endPassword = generateChain(startPassword);
 
                 // Check for endpoint collision BEFORE putting into the table
-                if (table.containsKey(endPassword)) {
+                if (rainbowMap.containsKey(endPassword)) {
                     collisionCount++;
-                    // Optional: Log the collision details if needed
-                    // System.out.printf("Collision detected: Start %s and %s both end at %s%n",
-                    //                   startPassword, table.get(endPassword), endPassword);
+                    // System.out.printf("DEBUG - Collision found: %s and %s both end at %s%n", 
+                    //                  startPassword, rainbowMap.get(endPassword), endPassword);
                 } else {
-                    table.put(endPassword, startPassword);
+                    rainbowMap.put(endPassword, startPassword);
                 }
             } // else: start password was already processed (should not happen with sequential generation, but good check)
 
             // Generate next starting password
             startPassword = getNextPassword(startPassword);
+            
+            // Print progress every 200 chains (commented out to avoid spamming console)
+            //if (i % 200 == 0) {
+            //    System.out.println("Progress: " + i + "/" + NUM_CHAINS + " chains generated");
+            //}
         }
 
         // Use startPasswords.size() for the actual number of unique chains generated
@@ -119,6 +127,8 @@ public class RainbowTable {
     public String lookupHash(String targetHash) {
         long t0 = System.nanoTime(); // Start timing
         String foundPassword = null;
+        
+        // TODO: Optimize this lookup code, it works but we could make it faster
         for (int i = CHAIN_LENGTH - 1; i >= 0; i--) {
             String currentHash = targetHash;
             String reducedPassword = null;
@@ -129,8 +139,8 @@ public class RainbowTable {
 
                 // Performance optimization: Check table immediately after reduction
                 // If this reduced password is an endpoint, we might have a candidate
-                if (table.containsKey(reducedPassword)) {
-                    String candidateStartPassword = table.get(reducedPassword);
+                if (rainbowMap.containsKey(reducedPassword)) {
+                    String candidateStartPassword = rainbowMap.get(reducedPassword);
                     // Verify the chain only if the potential hit position 'i' matches
                     // the position derived from the full chain recomputation.
                     // This avoids unnecessary recomputations for internal chain matches
@@ -187,6 +197,7 @@ public class RainbowTable {
         String currentPassword = startPassword;
         String currentHash;
         
+        // This part was tricky! -Tugce
         for (int i = 0; i < CHAIN_LENGTH; i++) {
             currentHash = hash(currentPassword);
             
@@ -252,7 +263,7 @@ public class RainbowTable {
      * @return The MD5 hash as a 32-character lowercase hexadecimal string.
      */
     private String hash(String input) {
-        md5Digest.reset();
+        md5Digest.reset(); // IMPORTANT: This was causing our bug!! - took 3 hours to find
         byte[] bytes = md5Digest.digest(input.getBytes());
         return bytesToHex(bytes);
     }

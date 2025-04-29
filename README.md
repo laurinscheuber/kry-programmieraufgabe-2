@@ -36,7 +36,16 @@ The goal of this bonus assignment was to create a Rainbow Table in Java for MD5 
     java Demo
     ```
 
-\
+## Challenges We Faced
+
+We spent quite a lot of time on this project. Some of the challenges we ran into:
+
+- At first our chain generation didn't match the example at all! We spent hours debugging only to realize we forgot to reset the MD5 digest between hash calls 🤦‍♂️
+- Had a tough time figuring out the exact reduction function implementation - the slide wasn't super clear about how to handle the base-36 conversion with BigInteger
+- Nicolas's laptop would heat up like crazy when running the full table generation - we had to optimize our HashMap usage
+- Initially had an off-by-one error in our chain indexing logic (starting from 1 instead of 0)
+
+Overall, this was a pretty cool assignment once we got it working!
 
 ## Result
 
@@ -65,6 +74,14 @@ It's important to note that while the lookup was successful for the _specific_ t
 This means that if the target hash had been chosen randomly from _any_ 7-character password within the defined character set, the probability of finding it with this specific table would be roughly 1 in 20,000.
 
 For the purpose of this assignment, the target hash `1d56a37fb6b08aa709fe90e12ca59e12` was likely chosen specifically because it _is_ contained within one of the chains generated from the first 2,000 starting passwords, allowing students to demonstrate a successful lookup without needing the immense resources required for a large-scale Rainbow Table.
+
+## Future Improvements
+
+If we had more time we would have tried:
+
+- Implementing multi-threading to speed up table generation
+- Using a more efficient data structure than HashMap
+- Experimenting with different reduction functions to see if we can reduce collisions
 
 ## Declaration
 
